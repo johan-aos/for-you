@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Bonjour, Gris</title>
+
+<!--
+You may not be able to read this right away, but you have captured my full attention and here's my confession: I'm utterly infatuated with you.
+Hoping everything goes great on our date, this note serves as a testament to the warmth you've awakened in my heart.
+25/05/2026  4:30pm
+Signed: (Dr.) JAOS
+-->
+
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+  color: black;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 100dvh;              /*  FIX iOS viewport bug */
+  overflow: hidden;            /*  disable scrolling */
+  overscroll-behavior: none;   /*  removes bounce */
+}
+
+.container {
+  padding: 20px;
+  max-width: 90vw;   /* ✅ prevents edge overflow on small screens */
+}
+
+button {
+  padding: 15px 25px;
+  margin: 8px;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent; /* ✅ ADD THIS LINE */
+}
+
+.yes { background: #28a745; color: white; }
+.no { background: #dc3545; color: white; position: relative; }
+.next { background: #007bff; color: white; }
+
+.selected {
+  outline: 3px solid black;
+  transform: scale(1.05);
+}
+
+.options {
+  display: flex;
+  justify-content: center;   /* centered columns */
+  align-items: flex-start;
+  gap: 30px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.6s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="confetti"></canvas>
+
+<div class="container" id="main">
+  <h1>Bonjour, Madame Gris 😊</h1>   <!-- First line of the message -->
+  <h2>Would you like to go out with me?</h2> <!-- Second line of the message -->
+
+  <button class="yes" onclick="yesClicked()">Sure!</button>
+  <button class="no" id="noBtn">Maybe another time</button>
+</div>
+
+<script>
+
+/* CANVAS */
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+/* STATE */
+let selectedTime = "";
+let selectedDate = "";
+let noClicks = 0;   // counter for the number of times the no button is clicked
+let pieces = [];
+
+/* NO BUTTON behavior */
+document.getElementById("noBtn").addEventListener("click", () => {
+  noClicks++;
+
+  if (noClicks <= 2) {
+    const container = document.getElementById("main");
+    const rect = container.getBoundingClientRect();
+
+    let x, y, safe = false;
+
+    while (!safe) {
+      x = Math.random() * (window.innerWidth - 120);
+      y = Math.random() * (window.innerHeight - 50);
+
+      if (
+        x < rect.left - 20 ||
+        x > rect.right + 20 ||
+        y < rect.top - 20 ||
+        y > rect.bottom + 20
+      ) {
+        safe = true;
+      }
+    }
+
+    const btn = document.getElementById("noBtn");
+    btn.style.position = "absolute";
+    btn.style.left = x + "px";
+    btn.style.top = y + "px";
+
+  } else {
+    document.getElementById("main").innerHTML = `
+      <h1>No worries! ^-^</h1>
+      <h2>(Refresh to try again 😅)</h2>
+    `;
+  }
+});
+
+/* YES FLOW */
+function yesClicked() {
+  startConfetti();
+
+  document.getElementById("main").innerHTML = `
+    <h2>Please, tell me the date and time that works for you 😊</h2>
+
+    <div class="options">
+      <div class="column">
+        <h3>Time</h3>
+        <button onclick="selectOption(this,'time')">9am</button>
+        <button onclick="selectOption(this,'time')">12pm</button>
+        <button onclick="selectOption(this,'time')">5pm</button>
+      </div>
+
+      <div class="column">
+        <h3>Date</h3>
+        <button onclick="selectOption(this,'date')">Saturday 30th</button>
+        <button onclick="selectOption(this,'date')">Sunday 31st</button>
+        <button onclick="selectOption(this,'date')">TBD</button>
+      </div>
+    </div>
+
+    <button class="next" onclick="nextPage()">Next</button>
+    <div id="message" style="margin-top:10px;font-weight:bold;color:royalblue;"></div>
+  `;
+}
+
+/* SELECT */
+function selectOption(btn, type) {
+  const parent = btn.parentElement;
+
+  Array.from(parent.querySelectorAll("button")).forEach(b => {
+    b.classList.remove("selected");
+  });
+
+  btn.classList.add("selected");
+
+  if (type === "time") selectedTime = btn.innerText;
+  else selectedDate = btn.innerText;
+
+  const msg = document.getElementById("message");
+  if (msg) msg.innerHTML = "";
+}
+
+/* NEXT - Third page */
+function nextPage() {
+  const msg = document.getElementById("message");
+  const isTBDOnly = selectedDate === "TBD" && !selectedTime;
+
+  if ((!selectedDate || !selectedTime) && selectedDate !== "TBD") {
+    msg.innerHTML = "If unsure, please select TBD";
+    return;
+  }
+
+  if (isTBDOnly) {
+    document.getElementById("main").innerHTML = `
+      <div class="fade-in">
+        <h1>We can talk about it, all good ^-^</h1>
+      </div>
+    `;
+    sendData("TBD","TBD");
+    return;
+  }
+
+  document.getElementById("main").innerHTML = `
+    <div class="fade-in">
+      <h1>I'll pick the place, no worries! 💫</h1>
+      <h2>${selectedDate} at ${selectedTime}</h2>
+    </div>
+  `;
+
+  sendData(selectedDate, selectedTime);
+}
+
+/* DATA SENDING TO THE WEBHOOK SITE */
+function sendData(date, time) {
+  const formData = new FormData();
+
+  formData.append("date", date);
+  formData.append("time", time);
+  formData.append("timestamp", new Date().toLocaleString("en-US", {
+    timeZone: "America/Monterrey"
+  }));
+
+  fetch("https://webhook.site/2509c5fc-2e51-44f1-b6ee-faf8e7bd3932", {
+    method: "POST",
+    body: formData
+  }).catch(() => {});
+}
+
+/* CONFETTI - HP animation */
+function startConfetti() {
+  pieces = [];
+  for (let i = 0; i < 80; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 8 + 4,
+      d: Math.random() * 6 + 2,
+      angle: Math.random() * Math.PI * 2,
+      spin: (Math.random() - 0.5) * 0.05
+    });
+  }
+  animateConfetti();
+}
+
+function drawHallows(size) {
+  const h = size * 2;
+
+  ctx.beginPath();
+  ctx.moveTo(0, -h / 2);
+  ctx.lineTo(-size, h / 2);
+  ctx.lineTo(size, h / 2);
+  ctx.closePath();
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(0, size * 0.2, size * 0.5, 0, Math.PI * 2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(0, -h / 2);
+  ctx.lineTo(0, h / 2);
+  ctx.stroke();
+}
+
+function animateConfetti() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.shadowColor = "white";
+  ctx.shadowBlur = 6;
+  ctx.strokeStyle = "white";
+
+  pieces.forEach(p => {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.angle);
+    drawHallows(p.r);
+    ctx.restore();
+
+    p.y += p.d * 0.25;
+    p.angle += p.spin;
+
+    if (p.y > canvas.height + 20) {
+      p.y = -20;
+      p.x = Math.random() * canvas.width;
+    }
+  });
+
+  ctx.shadowBlur = 0;
+  requestAnimationFrame(animateConfetti);
+}
+
+/* disable touchmove to prevent bounce */
+document.addEventListener("touchmove", function(e) {
+  e.preventDefault();
+}, { passive: false });
+
+</script>
+
+</body>
+</html>
