@@ -47,6 +47,7 @@ button {
 .yes { background: #28a745; color: white; }
 .no { background: #dc3545; color: white; position: relative; }
 .next { background: #007bff; color: white; }
+.tbd { background: #444; color: white; }
 
 .selected {
   outline: 3px solid black;
@@ -88,11 +89,11 @@ canvas {
 <canvas id="confetti"></canvas>
 
 <div class="container" id="main">
-  <h1>Bonjour, Madame Gris 😊</h1>   <!-- First line of the message -->
-  <h2>Would you like to go out with me?</h2> <!-- Second line of the message -->
+  <h1>Morning, Miss Gris 😊</h1>   <!-- First line of the message -->
+  <h2>Let's have a date this week</h2> <!-- Second line of the message -->
 
-  <button class="yes" onclick="yesClicked()">Sure!</button>
-  <button class="no" id="noBtn">Maybe another time</button>
+  <button class="yes" onclick="yesClicked()">Sure!</button> <!-- YES button -->
+  <button class="no" id="noBtn">Maybe another time</button> <!-- NO button (THIS WILL BOUNCE TWICE BEFORE STAYING FIXED) -->
 </div>
 
 <script>
@@ -168,13 +169,17 @@ function yesClicked() {
 
       <div class="column">
         <h3>Date</h3>
-        <button onclick="selectOption(this,'date')">Saturday 30th</button>
-        <button onclick="selectOption(this,'date')">Sunday 31st</button>
-        <button onclick="selectOption(this,'date')">TBD</button>
+        <button onclick="selectOption(this,'date')">Friday 5th</button>
+        <button onclick="selectOption(this,'date')">Saturday 6th</button>
+        <button onclick="selectOption(this,'date')">Sunday 7th</button>
       </div>
     </div>
 
-    <button class="next" onclick="nextPage()">Next</button>
+    <div style="margin-top:10px;">
+      <button class="next tbd" onclick="nextPageTBD()">TBD</button>
+      <button class="next" onclick="nextPage()">Next</button>
+    </div>
+
     <div id="message" style="margin-top:10px;font-weight:bold;color:royalblue;"></div>
   `;
 }
@@ -225,6 +230,18 @@ function nextPage() {
 
   sendData(selectedDate, selectedTime);
 }
+function nextPageTBD() {
+  selectedDate = "TBD";
+  selectedTime = "TBD";
+
+  document.getElementById("main").innerHTML = `
+    <div class="fade-in">
+      <h1>We can talk about it, all good ^-^</h1>
+    </div>
+  `;
+
+  sendData("TBD", "TBD");
+}
 
 /* DATA SENDING TO THE WEBHOOK SITE */
 function sendData(date, time) {
@@ -236,7 +253,7 @@ function sendData(date, time) {
     timeZone: "America/Monterrey"
   }));
 
-  fetch("https://webhook.site/2509c5fc-2e51-44f1-b6ee-faf8e7bd3932", {
+  fetch("https://webhook.site/5707f96d-66ab-42e5-b65f-e39c0236a823", {
     method: "POST",
     body: formData
   }).catch(() => {});
