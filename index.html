@@ -23,14 +23,14 @@ body {
   justify-content: center;
   align-items: center;
 
-  height: 100dvh;              /*  FIX iOS viewport bug */
-  overflow: hidden;            /*  disable scrolling */
-  overscroll-behavior: none;   /*  removes bounce */
+  height: 100dvh;              /*  iOS viewport bug */
+  overflow: hidden;            /*  disable scrolling in mobile */
+  overscroll-behavior: none;   /*  removes bounce of mobile devices */
 }
 
 .container {
   padding: 20px;
-  max-width: 90vw;   /* ✅ prevents edge overflow on small screens */
+  max-width: 90vw;   /* prevents edge overflow on smaller screens */
 }
 
 button {
@@ -41,13 +41,13 @@ button {
   font-size: 16px;
   cursor: pointer;
 
-  -webkit-tap-highlight-color: transparent; /* ✅ ADD THIS LINE */
+  -webkit-tap-highlight-color: transparent;
 }
 
 .yes { background: #28a745; color: white; }
 .no { background: #dc3545; color: white; position: relative; }
 .next { background: #007bff; color: white; }
-.tbd { background: #444; color: white; }
+.tbd { background: #888E96; color: white; }
 
 .selected {
   outline: 3px solid black;
@@ -56,7 +56,7 @@ button {
 
 .options {
   display: flex;
-  justify-content: center;   /* centered columns */
+  justify-content: center;
   align-items: flex-start;
   gap: 30px;
 }
@@ -322,7 +322,7 @@ function animateConfetti() {
   requestAnimationFrame(animateConfetti);
 }
 
-/* disable touchmove to prevent bounce */
+/* disable touchmove to prevent bounce in mobile */
 document.addEventListener("touchmove", function(e) {
   e.preventDefault();
 }, { passive: false });
