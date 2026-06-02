@@ -88,7 +88,7 @@ canvas {
 
 <div class="container" id="main">
   <h1>Morning, Miss Gris 😊</h1>
-  <h2>Let's have a date this week</h2>
+  <h2>I'd love to have a date this week with You</h2>
 
   <button class="yes" onclick="yesClicked()">Sure!</button>
   <button class="no" id="noBtn">Maybe another time</button>
@@ -248,27 +248,15 @@ function finalPage() {
     return;
   }
 
-  let activityText = selectedActivity;
+  const activityMap = {
+    "Restaurant": "A great meal awaits us!",
+    "Bar/club": "Party time!",
+    "Cook for me": "Your place or mine, it sure will be delicious!",
+    "Outdoor canvas painting": "Under the sunlight or moonlight, we're painting under the stars!",
+    "Let's wing it!": "Who knows where we'll end up, but I'm sure it'll be remembered!"
+  };
 
-  if (selectedActivity === "Restaurant") {
-    activityText = "A great meal awaits us!";
-  }
-
-  if (selectedActivity === "Bar/club") {
-    activityText = "Party time!";
-  }
-
-  if (selectedActivity === "Cook for me") {
-    activityText = "Your place or mine, it sure will be delicious!";
-  }
-
-  if (selectedActivity === "Outdoor canvas painting") {
-    activityText = "Under the sunlight or moonlight, we're painting under the stars!";
-  }
-
-  if (selectedActivity === "Let's wing it!") {
-    activityText = "Who knows where we'll end up, but I'm sure it'll be remembered!";
-  }
+  let activityText = activityMap[selectedActivity] || selectedActivity;
 
   document.getElementById("main").innerHTML = `
     <div class="fade-in">
@@ -278,7 +266,7 @@ function finalPage() {
     </div>
   `;
 
-  sendData(selectedDate, selectedTime);
+  sendData(selectedDate, selectedTime,selectedActivity);
 }
 
 /* TBD */
@@ -289,11 +277,12 @@ function nextPageTBD() {
 }
 
 /* SEND DATA */
-function sendData(date, time) {
+function sendData(date, time, activity) {
   const formData = new FormData();
 
   formData.append("date", date);
   formData.append("time", time);
+  formData.append("activity", activity);
   formData.append("timestamp", new Date().toLocaleString("en-US", {
     timeZone: "America/Monterrey"
   }));
