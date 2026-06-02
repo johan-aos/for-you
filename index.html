@@ -5,13 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <title>Bonjour, Gris</title>
 
-<!--
-You may not be able to read this right away, but you have captured my full attention and here's my confession: I'm utterly infatuated with you.
-Hoping everything goes great on our date, this note serves as a testament to the warmth you've awakened in my heart.
-25/05/2026  4:30pm
-Signed: (Dr.) JAOS
--->
-
 <style>
 body {
   margin: 0;
@@ -158,8 +151,8 @@ function yesClicked() {
       <div class="column">
         <h3>Time</h3>
         <button onclick="selectOption(this,'time')">9am</button>
-        <button onclick="selectOption(this,'time')">12pm</button>
-        <button onclick="selectOption(this,'time')">5pm</button>
+        <button onclick="selectOption(this,'time')">1pm</button>
+        <button onclick="selectOption(this,'time')">7pm</button>
       </div>
 
       <div class="column">
@@ -212,7 +205,8 @@ function nextPage() {
         <div class="column">
           <button onclick="selectActivity(this)">Restaurant</button>
           <button onclick="selectActivity(this)">Bar/club</button>
-          <button onclick="selectActivity(this)">Paint under the moonlight</button>
+          <button onclick="selectActivity(this)">Cook for me</button>
+          <button onclick="selectActivity(this)">Outdoor canvas painting</button>
           <button onclick="selectActivity(this)">Let's wing it!</button>
         </div>
       </div>
@@ -247,11 +241,33 @@ function finalPage() {
     return;
   }
 
+  let activityText = selectedActivity;
+
+  if (selectedActivity === "Restaurant") {
+    activityText = "A great meal awaits us!";
+  }
+
+  if (selectedActivity === "Bar/club") {
+    activityText = "Party time!";
+  }
+
+  if (selectedActivity === "Cook for me") {
+    activityText = "Your place or mine, it sure will be delicious!";
+  }
+
+  if (selectedActivity === "Outdoor canvas painting") {
+    activityText = "Under the sunlight or moonlight, we're painting under the stars!";
+  }
+
+  if (selectedActivity === "Let's wing it!") {
+    activityText = "Who knows where we'll end up, but I'm sure it'll be remembered!";
+  }
+
   document.getElementById("main").innerHTML = `
     <div class="fade-in">
-      <h1>I'll take care of everything 💫</h1>
-      <h2>${selectedDate} at ${selectedTime}</h2>
-      <h3>${selectedActivity}</h3>
+      <h1>Looking forward to this! 💫</h1>
+      <h3>${selectedDate} at ${selectedTime}</h3>
+      <h2>${activityText}</h2>
     </div>
   `;
 
