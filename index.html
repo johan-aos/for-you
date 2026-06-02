@@ -23,14 +23,14 @@ body {
   justify-content: center;
   align-items: center;
 
-  height: 100dvh;              /*  iOS viewport bug */
-  overflow: hidden;            /*  disable scrolling in mobile */
-  overscroll-behavior: none;   /*  removes bounce of mobile devices */
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 .container {
   padding: 20px;
-  max-width: 90vw;   /* prevents edge overflow on smaller screens */
+  max-width: 90vw;
 }
 
 button {
@@ -40,7 +40,6 @@ button {
   border-radius: 30px;
   font-size: 16px;
   cursor: pointer;
-
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -57,7 +56,6 @@ button {
 .options {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
   gap: 30px;
 }
 
@@ -89,11 +87,11 @@ canvas {
 <canvas id="confetti"></canvas>
 
 <div class="container" id="main">
-  <h1>Morning, Miss Gris 😊</h1>   <!-- First line of the message -->
-  <h2>Let's have a date this week</h2> <!-- Second line of the message -->
+  <h1>Morning, Miss Gris 😊</h1>
+  <h2>Let's have a date this week</h2>
 
-  <button class="yes" onclick="yesClicked()">Sure!</button> <!-- YES button -->
-  <button class="no" id="noBtn">Maybe another time</button> <!-- NO button (THIS WILL BOUNCE TWICE BEFORE STAYING FIXED) -->
+  <button class="yes" onclick="yesClicked()">Sure!</button>
+  <button class="no" id="noBtn">Maybe another time</button>
 </div>
 
 <script>
@@ -112,17 +110,16 @@ window.addEventListener("resize", resizeCanvas);
 /* STATE */
 let selectedTime = "";
 let selectedDate = "";
-let noClicks = 0;   // counter for the number of times the no button is clicked
+let selectedActivity = "";
+let noClicks = 0;
 let pieces = [];
 
-/* NO BUTTON behavior */
+/* NO BUTTON */
 document.getElementById("noBtn").addEventListener("click", () => {
   noClicks++;
 
   if (noClicks <= 2) {
-    const container = document.getElementById("main");
-    const rect = container.getBoundingClientRect();
-
+    const rect = document.getElementById("main").getBoundingClientRect();
     let x, y, safe = false;
 
     while (!safe) {
@@ -134,9 +131,7 @@ document.getElementById("noBtn").addEventListener("click", () => {
         x > rect.right + 20 ||
         y < rect.top - 20 ||
         y > rect.bottom + 20
-      ) {
-        safe = true;
-      }
+      ) safe = true;
     }
 
     const btn = document.getElementById("noBtn");
@@ -184,7 +179,7 @@ function yesClicked() {
   `;
 }
 
-/* SELECT */
+/* SELECT DATE/TIME */
 function selectOption(btn, type) {
   const parent = btn.parentElement;
 
@@ -197,53 +192,80 @@ function selectOption(btn, type) {
   if (type === "time") selectedTime = btn.innerText;
   else selectedDate = btn.innerText;
 
-  const msg = document.getElementById("message");
-  if (msg) msg.innerHTML = "";
+  document.getElementById("message").innerHTML = "";
 }
 
-/* NEXT - Third page */
+/* NEXT → ACTIVITIES */
 function nextPage() {
   const msg = document.getElementById("message");
-  const isTBDOnly = selectedDate === "TBD" && !selectedTime;
 
-  if ((!selectedDate || !selectedTime) && selectedDate !== "TBD") {
-    msg.innerHTML = "If unsure, please select TBD";
-    return;
-  }
-
-  if (isTBDOnly) {
-    document.getElementById("main").innerHTML = `
-      <div class="fade-in">
-        <h1>We can talk about it, all good ^-^</h1>
-      </div>
-    `;
-    sendData("TBD","TBD");
+  if (!selectedDate || !selectedTime) {
+    msg.innerHTML = "Please select a date and time (or use TBD)";
     return;
   }
 
   document.getElementById("main").innerHTML = `
     <div class="fade-in">
-      <h1>I'll pick the place, no worries! 💫</h1>
+      <h2>What would you like to do? 😊</h2>
+
+      <div class="options">
+        <div class="column">
+          <button onclick="selectActivity(this)">Restaurant</button>
+          <button onclick="selectActivity(this)">Bar/club</button>
+          <button onclick="selectActivity(this)">Paint under the moonlight</button>
+          <button onclick="selectActivity(this)">Let's wing it!</button>
+        </div>
+      </div>
+
+      <button class="next" onclick="finalPage()">Next</button>
+
+      <div id="message" style="margin-top:10px;font-weight:bold;color:royalblue;"></div>
+    </div>
+  `;
+}
+
+/* SELECT ACTIVITY */
+function selectActivity(btn) {
+  const parent = btn.parentElement;
+
+  Array.from(parent.querySelectorAll("button")).forEach(b => {
+    b.classList.remove("selected");
+  });
+
+  btn.classList.add("selected");
+  selectedActivity = btn.innerText;
+
+  document.getElementById("message").innerHTML = "";
+}
+
+/* FINAL PAGE */
+function finalPage() {
+  const msg = document.getElementById("message");
+
+  if (!selectedActivity) {
+    msg.innerHTML = "Please select an activity";
+    return;
+  }
+
+  document.getElementById("main").innerHTML = `
+    <div class="fade-in">
+      <h1>I'll take care of everything 💫</h1>
       <h2>${selectedDate} at ${selectedTime}</h2>
+      <h3>${selectedActivity}</h3>
     </div>
   `;
 
   sendData(selectedDate, selectedTime);
 }
+
+/* TBD */
 function nextPageTBD() {
   selectedDate = "TBD";
   selectedTime = "TBD";
-
-  document.getElementById("main").innerHTML = `
-    <div class="fade-in">
-      <h1>We can talk about it, all good ^-^</h1>
-    </div>
-  `;
-
-  sendData("TBD", "TBD");
+  nextPage();
 }
 
-/* DATA SENDING TO THE WEBHOOK SITE */
+/* SEND DATA */
 function sendData(date, time) {
   const formData = new FormData();
 
@@ -259,7 +281,7 @@ function sendData(date, time) {
   }).catch(() => {});
 }
 
-/* CONFETTI - HP animation */
+/* CONFETTI */
 function startConfetti() {
   pieces = [];
   for (let i = 0; i < 80; i++) {
@@ -322,10 +344,8 @@ function animateConfetti() {
   requestAnimationFrame(animateConfetti);
 }
 
-/* disable touchmove to prevent bounce in mobile */
-document.addEventListener("touchmove", function(e) {
-  e.preventDefault();
-}, { passive: false });
+/* Prevent mobile bounce */
+document.addEventListener("touchmove", e => e.preventDefault(), { passive: false });
 
 </script>
 
