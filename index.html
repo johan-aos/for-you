@@ -22,16 +22,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-
   height: 100dvh;
   overflow: hidden;
   overscroll-behavior: none;
 }
 
-.container {
-  padding: 20px;
-  max-width: 90vw;
-}
+.container { padding: 20px; max-width: 90vw; }
 
 button {
   padding: 15px 25px;
@@ -43,42 +39,20 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
-.yes { background: #28a745; color: white; }
-.no { background: #dc3545; color: white; position: relative; }
-.next { background: #007bff; color: white; }
-.tbd { background: #888E96; color: white; }
+.yes { background:#28a745;color:white; }
+.no { background:#dc3545;color:white; position:relative; }
+.next { background:#007bff;color:white; }
+.tbd { background:#A8B0B3;color:white; }
 
-.selected {
-  outline: 3px solid black;
-  transform: scale(1.05);
-}
+.selected { outline:3px solid black; transform:scale(1.05); }
 
-.options {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-}
+.options { display:flex; justify-content:center; gap:30px; }
+.column { display:flex; flex-direction:column; }
 
-.column {
-  display: flex;
-  flex-direction: column;
-}
+canvas { position:fixed; top:0; left:0; pointer-events:none; }
 
-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-}
-
-.fade-in {
-  opacity: 0;
-  animation: fadeIn 0.6s ease-in forwards;
-}
-
-@keyframes fadeIn {
-  to { opacity: 1; }
-}
+.fade-in { opacity:0; animation:fadeIn .6s forwards; }
+@keyframes fadeIn { to {opacity:1;} }
 </style>
 </head>
 
@@ -87,9 +61,8 @@ canvas {
 <canvas id="confetti"></canvas>
 
 <div class="container" id="main">
-  <h1>Morning, Miss Gris 😊</h1>
+  <h1>Hello there, Miss Gris 😊</h1>
   <h2>I'd love to have a date this week with You</h2>
-
   <button class="yes" onclick="yesClicked()">Sure!</button>
   <button class="no" id="noBtn">Maybe another time</button>
 </div>
@@ -111,14 +84,19 @@ window.addEventListener("resize", resizeCanvas);
 let selectedTime = "";
 let selectedDate = "";
 let selectedActivity = "";
-let noClicks = 0;
 let pieces = [];
+let animationMode = "hallows";
+
+/* START */
+startParticles();
+animate();
 
 /* NO BUTTON */
+let noClicks = 0;
 document.getElementById("noBtn").addEventListener("click", () => {
   noClicks++;
 
-  if (noClicks <= 2) {
+  if (noClicks <= 1) {
     const rect = document.getElementById("main").getBoundingClientRect();
     let x, y, safe = false;
 
@@ -147,133 +125,116 @@ document.getElementById("noBtn").addEventListener("click", () => {
   }
 });
 
-/* YES FLOW */
-function yesClicked() {
-  startConfetti();
+/* FLOW */
 
-  document.getElementById("main").innerHTML = `
-    <h2>Please, tell me the date and time that works for you 😊</h2>
+function yesClicked() {
+  animationMode = "time";
+  startParticles();
+  renderTimePage();
+}
+
+function nextPage() {
+  if (!selectedDate || !selectedTime) {
+    document.getElementById("message").innerHTML = "If unsure, you may use TBD";
+    return;
+  }
+  animationMode = "activities";
+  startParticles();
+  renderActivityPage();
+}
+
+function nextPageTBD() {
+  selectedDate = "TBD";
+  selectedTime = "TBD";
+  nextPage();
+}
+
+function finalPage() {
+  if (!selectedActivity) {
+    document.getElementById("message").innerHTML = "Select an activity";
+    return;
+  }
+
+  animationMode = "space";
+  startParticles();
+
+  const map = {
+    "Restaurant": "A great meal awaits for us!",
+    "Bar/club": "Party time!",
+    "Cook for me": "Your place or mine, it sure will be delicious!",
+    "Outdoor canvas painting": "Under the sunlight or moonlight, a beautiful sky above us",
+    "Let's wing it!": "Who knows where we'll end up, but I'm sure it'll be remembered!"
+  };
+
+  const txt = map[selectedActivity] || selectedActivity;
+
+  document.body.style.background = "linear-gradient(135deg,#0a0a1f,#1c0033,black)";
+  document.body.style.color = "white";
+
+  main.innerHTML = `
+    <h1>Looking forward to this! 💫</h1>
+    <h3>${selectedDate} at ${selectedTime}</h3>
+    <h2>${txt}</h2>
+  `;
+
+  sendData(selectedDate, selectedTime, selectedActivity);
+}
+
+/* UI */
+
+function renderTimePage() {
+  main.innerHTML = `
+    <h2>Select date & time 😊</h2>
 
     <div class="options">
       <div class="column">
-        <h3>Time</h3>
         <button onclick="selectOption(this,'time')">9am</button>
         <button onclick="selectOption(this,'time')">1pm</button>
         <button onclick="selectOption(this,'time')">7pm</button>
       </div>
-
       <div class="column">
-        <h3>Date</h3>
         <button onclick="selectOption(this,'date')">Friday 5th</button>
         <button onclick="selectOption(this,'date')">Saturday 6th</button>
         <button onclick="selectOption(this,'date')">Sunday 7th</button>
       </div>
     </div>
 
-    <div style="margin-top:10px;">
-      <button class="next tbd" onclick="nextPageTBD()">TBD</button>
-      <button class="next" onclick="nextPage()">Next</button>
-    </div>
-
-    <div id="message" style="margin-top:10px;font-weight:bold;color:royalblue;"></div>
+    <button class="tbd" onclick="nextPageTBD()">TBD</button>
+    <button class="next" onclick="nextPage()">Next</button>
+    <div id="message"></div>
   `;
 }
 
-/* SELECT DATE/TIME */
-function selectOption(btn, type) {
-  const parent = btn.parentElement;
+function renderActivityPage() {
+  main.innerHTML = `
+    <h2>Pick an activity 😊</h2>
 
-  Array.from(parent.querySelectorAll("button")).forEach(b => {
-    b.classList.remove("selected");
-  });
+    <div class="column">
+      <button onclick="selectActivity(this)">Restaurant</button>
+      <button onclick="selectActivity(this)">Bar/club</button>
+      <button onclick="selectActivity(this)">Cook for me</button>
+      <button onclick="selectActivity(this)">Outdoor canvas painting</button>
+      <button onclick="selectActivity(this)">Let's wing it!</button>
+    </div>
 
+    <button class="next" onclick="finalPage()">Next</button>
+    <div id="message"></div>
+  `;
+}
+
+/* SELECT */
+function selectOption(btn,type){
+  btn.parentElement.querySelectorAll("button").forEach(b=>b.classList.remove("selected"));
   btn.classList.add("selected");
 
-  if (type === "time") selectedTime = btn.innerText;
-  else selectedDate = btn.innerText;
-
-  document.getElementById("message").innerHTML = "";
+  if(type==="time") selectedTime=btn.innerText;
+  else selectedDate=btn.innerText;
 }
 
-/* NEXT → ACTIVITIES */
-function nextPage() {
-  const msg = document.getElementById("message");
-
-  if (!selectedDate || !selectedTime) {
-    msg.innerHTML = "Please select a date and time (or use TBD)";
-    return;
-  }
-
-  document.getElementById("main").innerHTML = `
-    <div class="fade-in">
-      <h2>What would you like to do? 😊</h2>
-
-      <div class="options">
-        <div class="column">
-          <button onclick="selectActivity(this)">Restaurant</button>
-          <button onclick="selectActivity(this)">Bar/club</button>
-          <button onclick="selectActivity(this)">Cook for me</button>
-          <button onclick="selectActivity(this)">Outdoor canvas painting</button>
-          <button onclick="selectActivity(this)">Let's wing it!</button>
-        </div>
-      </div>
-
-      <button class="next" onclick="finalPage()">Next</button>
-
-      <div id="message" style="margin-top:10px;font-weight:bold;color:royalblue;"></div>
-    </div>
-  `;
-}
-
-/* SELECT ACTIVITY */
-function selectActivity(btn) {
-  const parent = btn.parentElement;
-
-  Array.from(parent.querySelectorAll("button")).forEach(b => {
-    b.classList.remove("selected");
-  });
-
+function selectActivity(btn){
+  btn.parentElement.querySelectorAll("button").forEach(b=>b.classList.remove("selected"));
   btn.classList.add("selected");
-  selectedActivity = btn.innerText;
-
-  document.getElementById("message").innerHTML = "";
-}
-
-/* FINAL PAGE */
-function finalPage() {
-  const msg = document.getElementById("message");
-
-  if (!selectedActivity) {
-    msg.innerHTML = "Please select an activity";
-    return;
-  }
-
-  const activityMap = {
-    "Restaurant": "A great meal awaits us!",
-    "Bar/club": "Party time!",
-    "Cook for me": "Your place or mine, it sure will be delicious!",
-    "Outdoor canvas painting": "Under the sunlight or moonlight, we're painting under the stars!",
-    "Let's wing it!": "Who knows where we'll end up, but I'm sure it'll be remembered!"
-  };
-
-  let activityText = activityMap[selectedActivity] || selectedActivity;
-
-  document.getElementById("main").innerHTML = `
-    <div class="fade-in">
-      <h1>Looking forward to this! 💫</h1>
-      <h3>${selectedDate} at ${selectedTime}</h3>
-      <h2>${activityText}</h2>
-    </div>
-  `;
-
-  sendData(selectedDate, selectedTime,selectedActivity);
-}
-
-/* TBD */
-function nextPageTBD() {
-  selectedDate = "TBD";
-  selectedTime = "TBD";
-  nextPage();
+  selectedActivity=btn.innerText;
 }
 
 /* SEND DATA */
@@ -287,29 +248,62 @@ function sendData(date, time, activity) {
     timeZone: "America/Monterrey"
   }));
 
-  fetch("https://webhook.site/5707f96d-66ab-42e5-b65f-e39c0236a823", {
+  fetch("https://webhook.site/cfe43377-1dcf-46b9-abb7-55a50628792a", {
     method: "POST",
     body: formData
   }).catch(() => {});
 }
 
-/* CONFETTI */
-function startConfetti() {
-  pieces = [];
-  for (let i = 0; i < 80; i++) {
+/* PARTICLES */
+
+function startParticles(){
+  pieces=[];
+  for(let i=0;i<80;i++){
     pieces.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 8 + 4,
-      d: Math.random() * 6 + 2,
-      angle: Math.random() * Math.PI * 2,
-      spin: (Math.random() - 0.5) * 0.05
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height,
+      r:6,
+      d:Math.random()*1.5+0.5,
+      angle:Math.random()*Math.PI,
+      spin:(Math.random()-0.5)*0.05,
+      type:getType()
     });
   }
-  animateConfetti();
 }
 
-function drawHallows(size) {
+function getType(){
+  if(animationMode==="time") return Math.random()>0.5?"clock":"calendar";
+  if(animationMode==="activities") return ["brush","pizza","wine","fork"][Math.floor(Math.random()*4)];
+  return "hallows";
+}
+
+/* DRAW */
+
+function drawClock(s){
+  ctx.beginPath();
+  ctx.arc(0,0,s,0,Math.PI*2);
+  ctx.stroke();
+
+  ctx.beginPath(); // hour hand
+  ctx.moveTo(0,0);
+  ctx.lineTo(0,-s*0.6);
+  ctx.stroke();
+
+  ctx.beginPath(); // minute hand
+  ctx.moveTo(0,0);
+  ctx.lineTo(s*0.5,0);
+  ctx.stroke();
+}
+
+function drawCalendar(s){
+  ctx.strokeRect(-s,-s,s*2,s*2);
+  ctx.beginPath();
+  ctx.moveTo(-s,-s*0.4);
+  ctx.lineTo(s,-s*0.4);
+  ctx.stroke();
+}
+
+function drawHallows(size){
   const h = size * 2;
 
   ctx.beginPath();
@@ -329,37 +323,85 @@ function drawHallows(size) {
   ctx.stroke();
 }
 
-function animateConfetti() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+function drawPizza(s){
+  ctx.beginPath();
+  ctx.moveTo(0,-s);
+  ctx.lineTo(s,s);
+  ctx.lineTo(-s,s);
+  ctx.closePath();
+  ctx.stroke();
+}
 
-  ctx.shadowColor = "white";
-  ctx.shadowBlur = 6;
-  ctx.strokeStyle = "white";
+function drawWine(s){
+  ctx.beginPath();
+  ctx.arc(0,-s/2,s/2,0,Math.PI);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(0,-s/2);
+  ctx.lineTo(0,s);
+  ctx.stroke();
+}
 
-  pieces.forEach(p => {
+function drawFork(s){
+  ctx.beginPath();
+  ctx.moveTo(0,-s);
+  ctx.lineTo(0,s);
+  ctx.stroke();
+}
+
+function drawBrush(s){
+  ctx.beginPath();
+  ctx.moveTo(-s,s);
+  ctx.lineTo(s,s);
+  ctx.lineTo(0,-s);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+/* LOOP */
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  if(animationMode==="space"){
+    ctx.fillStyle="white";
+    ctx.fillRect(Math.random()*canvas.width,Math.random()*canvas.height,2,2);
+  }
+
+  pieces.forEach(p=>{
+    if(animationMode==="space") return;
+
     ctx.save();
-    ctx.translate(p.x, p.y);
+    ctx.translate(p.x,p.y);
     ctx.rotate(p.angle);
-    drawHallows(p.r);
+
+    switch(p.type){
+      case "hallows": drawHallows(p.r); break;
+      case "clock": drawClock(p.r); break;
+      case "calendar": drawCalendar(p.r); break;
+      case "pizza": drawPizza(p.r); break;
+      case "wine": drawWine(p.r); break;
+      case "fork": drawFork(p.r); break;
+      case "brush": drawBrush(p.r); break;
+    }
+
     ctx.restore();
 
-    p.y += p.d * 0.25;
-    p.angle += p.spin;
+    p.y+=p.d;
+    p.angle+=p.spin;
 
-    if (p.y > canvas.height + 20) {
-      p.y = -20;
-      p.x = Math.random() * canvas.width;
+    if(p.y>canvas.height){
+      p.y=-20;
+      p.x=Math.random()*canvas.width;
     }
   });
 
-  ctx.shadowBlur = 0;
-  requestAnimationFrame(animateConfetti);
+  requestAnimationFrame(animate);
 }
 
 /* Prevent mobile bounce */
 document.addEventListener("touchmove", e => e.preventDefault(), { passive: false });
 
 </script>
-
 </body>
 </html>
