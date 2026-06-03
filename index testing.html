@@ -329,11 +329,16 @@ function drawHallows(size){
 }
 
 function drawPizza(s){
+  ctx.strokeStyle = "white";
   ctx.beginPath();
-  ctx.moveTo(0,-s);
-  ctx.lineTo(s,s);
-  ctx.lineTo(-s,s);
-  ctx.closePath();
+  ctx.moveTo(0,-s); // Tip of the pizza
+  ctx.lineTo(s, s); // Right corner
+  ctx.quadraticCurveTo(0, s + s*0.5, -s, s); // Crust arc
+  ctx.lineTo(0, -s); // Tip back to the center (close)
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(0, 0, s*.25, 0, Math.PI * 2);
   ctx.stroke();
 }
 

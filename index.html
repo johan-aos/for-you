@@ -91,7 +91,7 @@ let animationMode = "hallows";
 startParticles();
 animate();
 
-/* NO BUTTON BEHAVIOR */
+/* NO BUTTON */
 let noClicks = 0;
 document.getElementById("noBtn").addEventListener("click", () => {
   noClicks++;
@@ -125,7 +125,7 @@ document.getElementById("noBtn").addEventListener("click", () => {
   }
 });
 
-/* YES BUTTON BEHAVIOR */
+/* FLOW */
 
 function yesClicked() {
   animationMode = "time";
@@ -158,7 +158,7 @@ function finalPage() {
   animationMode = "space";
   startParticles();
 
-  const map = { // MAP FOR THE ACTIVITY TEXT SELECTED
+  const map = {
     "Restaurant": "A great meal awaits for us!",
     "Bar/club": "Party time!",
     "Cook for me": "Your place or mine, it sure will be delicious!",
@@ -237,7 +237,7 @@ function selectActivity(btn){
   selectedActivity=btn.innerText;
 }
 
-/* SEND DATA FUNCTION */
+/* SEND DATA */
 function sendData(date, time, activity) {
   const formData = new FormData();
 
@@ -254,7 +254,7 @@ function sendData(date, time, activity) {
   }).catch(() => {});
 }
 
-/* PARTICLE ANIMATION */
+/* PARTICLES */
 
 function startParticles(){
   pieces=[];
@@ -277,7 +277,7 @@ function getType(){
   return "hallows";
 }
 
-/* DRAW FUNCTIONS */
+/* DRAW */
 
 function drawClock(s){
   ctx.beginPath();
@@ -296,6 +296,8 @@ function drawClock(s){
 }
 
 function drawCalendar(s){
+  ctx.strokeStyle = "white";
+
   ctx.strokeRect(-s,-s,s*2,s*2);
   ctx.beginPath();
   ctx.moveTo(-s,-s*0.4);
@@ -327,11 +329,16 @@ function drawHallows(size){
 }
 
 function drawPizza(s){
+  ctx.strokeStyle = "white";
   ctx.beginPath();
-  ctx.moveTo(0,-s);
-  ctx.lineTo(s,s);
-  ctx.lineTo(-s,s);
-  ctx.closePath();
+  ctx.moveTo(0,-s); // Tip of the pizza
+  ctx.lineTo(s, s); // Right corner
+  ctx.quadraticCurveTo(0, s + s*0.5, -s, s); // Crust arc
+  ctx.lineTo(0, -s); // Tip back to the center (close)
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(0, 0, s*.25, 0, Math.PI * 2);
   ctx.stroke();
 }
 
