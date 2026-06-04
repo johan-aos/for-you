@@ -280,6 +280,10 @@ function getType(){
 /* DRAW */
 
 function drawClock(s){
+  ctx.strokeStyle = "black";
+  ctx.shadowColor = "silver";
+  ctx.shadowBlur = 10;
+
   ctx.beginPath();
   ctx.arc(0,0,s,0,Math.PI*2);
   ctx.stroke();
@@ -297,6 +301,8 @@ function drawClock(s){
 
 function drawCalendar(s){
   ctx.strokeStyle = "white";
+  ctx.shadowColor = "royalblue";
+  ctx.shadowBlur = 10;
 
   ctx.strokeRect(-s,-s,s*2,s*2);
   ctx.beginPath();
@@ -329,7 +335,7 @@ function drawHallows(size){
 }
 
 function drawPizza(s){
-  ctx.strokeStyle = "red";
+  ctx.strokeStyle = "#E9BB16";
   ctx.beginPath();
   ctx.moveTo(0,-s); // Tip of the pizza
   ctx.lineTo(s, s); // Right corner
@@ -337,6 +343,7 @@ function drawPizza(s){
   ctx.lineTo(0, -s); // Tip back to the center (close)
   ctx.stroke();
 
+  ctx.strokeStyle = "red";
   ctx.beginPath();
   ctx.arc(0, 0, s*.25, 0, Math.PI * 2);
   ctx.stroke();
@@ -354,8 +361,10 @@ function drawFork(s){
 }
 
 function drawWine(s){
-  let scale = 1.5; // Fork size scale factor
-  ctx.strokeStyle = "purple";
+  let scale = 1.5; // Wine size scale factor
+  ctx.strokeStyle = "#960D1D";
+  ctx.shadowColor = "silver";
+  ctx.shadowBlur = 5;
   const tineWidth = s * 0.2;
   const tines = 4;
 
