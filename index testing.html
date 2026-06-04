@@ -329,7 +329,7 @@ function drawHallows(size){
 }
 
 function drawPizza(s){
-  ctx.strokeStyle = "white";
+  ctx.strokeStyle = "red";
   ctx.beginPath();
   ctx.moveTo(0,-s); // Tip of the pizza
   ctx.lineTo(s, s); // Right corner
@@ -342,7 +342,8 @@ function drawPizza(s){
   ctx.stroke();
 }
 
-function drawWine(s){
+function drawFork(s){
+  ctx.strokeStyle = "black";
   ctx.beginPath();
   ctx.arc(0,-s/2,s/2,0,Math.PI);
   ctx.stroke();
@@ -352,19 +353,47 @@ function drawWine(s){
   ctx.stroke();
 }
 
-function drawFork(s){
+function drawWine(s){
+  let scale = 1.5; // Fork size scale factor
+  ctx.strokeStyle = "purple";
+  const tineWidth = s * 0.2;
+  const tines = 4;
+
+  // Tines
+  for(let i=0; i<tines; i++){
+    let x = (i - (tines-1)/2) * tineWidth;
+    ctx.beginPath();
+    ctx.moveTo(x, -s);
+    ctx.lineTo(x, s*0.5);
+    ctx.stroke();
+  }
+
+  // Handle
   ctx.beginPath();
-  ctx.moveTo(0,-s);
-  ctx.lineTo(0,s);
+  ctx.moveTo(0, s*0.5);
+  ctx.lineTo(0, s);
   ctx.stroke();
 }
 
 function drawBrush(s){
+  let scale = 10; // Brush size scale factor
+  ctx.strokeStyle = "white";
+  ctx.shadowColor = "royalblue";
+  ctx.shadowBlur = 5;
+
+  // Handle
   ctx.beginPath();
-  ctx.moveTo(-s,s);
-  ctx.lineTo(s,s);
-  ctx.lineTo(0,-s);
-  ctx.closePath();
+  ctx.moveTo(0, s);
+  ctx.lineTo(0, -s*0.5);
+  ctx.stroke();
+
+  // Ferrule (metal part)
+  ctx.fillRect(-s*0.3, -s*0.5, s*0.6, s*0.2);
+
+  // Bristles (fan shape)
+  ctx.beginPath();
+  ctx.moveTo(-s*0.3, -s*0.3);
+  ctx.quadraticCurveTo(0, -s, s*0.3, -s*0.3);
   ctx.stroke();
 }
 
