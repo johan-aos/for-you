@@ -40,7 +40,7 @@ button {
 }
 
 .yes { background:#28a745;color:white; }
-.no { background:#dc3545;color:white; position:relative; }
+.no { background:#DD3822;color:lightyellow; position:relative; }
 .next { background:#007bff;color:white; }
 .tbd { background:#A8B0B3;color:white; }
 
@@ -61,10 +61,10 @@ canvas { position:fixed; top:0; left:0; pointer-events:none; }
 <canvas id="confetti"></canvas>
 
 <div class="container" id="main">
-  <h1>Hello there, Miss Gris 😊</h1>
-  <h2>I'd love to have a date this week with You</h2>
-  <button class="yes" onclick="yesClicked()">Sure!</button>
-  <button class="no" id="noBtn">Maybe another time</button>
+  <h1>Hello hello, Miss Gris 😊</h1>
+  <h2>It's been too much time away from You</h2>
+  <button class="yes" onclick="yesClicked()">Let's go out soon!</button>
+  <button class="no" id="noBtn">Can't make it this week &#128532;</button>
 </div>
 
 <script>
@@ -126,7 +126,7 @@ document.getElementById("noBtn").addEventListener("click", () => {
   } else {
     document.getElementById("main").innerHTML = `
       <h1>No worries! ^-^</h1>
-      <h2>(Refresh to try again 😅)</h2>
+      <h2>(You may always refresh the page to try again 😅)</h2>
     `;
   }
 });
@@ -141,7 +141,7 @@ function yesClicked() {
 
 function nextPage() {
   if (!selectedDate || !selectedTime) {
-    document.getElementById("message").innerHTML = "If unsure, you may use TBD";
+    document.getElementById("message").innerHTML = "Not sure? Press TBD";
     return;
   }
   animationMode = "activities";
@@ -174,7 +174,7 @@ function finalPage() {
     "Bar/club": "Party time!",
     "Cook for me": "Your place or mine, it sure will be delicious!",
     "Outdoor canvas painting": "Under the sunlight or moonlight, a beautiful sky above us",
-    "Let's wing it!": "Who knows where we'll end up, but I'm sure it'll be remembered!"
+    "Let's wing it!": "No matter where we go, with you it will be unforgettable"
   };
 
   const txt = map[selectedActivity] || selectedActivity;
@@ -183,7 +183,7 @@ function finalPage() {
   document.body.style.color = "white";
 
   main.innerHTML = `
-    <h1>Looking forward to this! 💫</h1>
+    <h1>See you soon 💫</h1>
     <h3>${selectedDate} at ${selectedTime}</h3>
     <h2>${txt}</h2>
   `;
@@ -195,18 +195,18 @@ function finalPage() {
 
 function renderTimePage() {
   main.innerHTML = `
-    <h2>Select date & time 😊</h2>
+    <h2>When would you like to meet? 😊</h2>
 
     <div class="options">
       <div class="column">
-        <button onclick="selectOption(this,'time')">9am</button>
+        <button onclick="selectOption(this,'time')">10am</button>
         <button onclick="selectOption(this,'time')">1pm</button>
         <button onclick="selectOption(this,'time')">7pm</button>
       </div>
       <div class="column">
-        <button onclick="selectOption(this,'date')">Friday 5th</button>
-        <button onclick="selectOption(this,'date')">Saturday 6th</button>
-        <button onclick="selectOption(this,'date')">Sunday 7th</button>
+        <button onclick="selectOption(this,'date')">Friday 12th</button>
+        <button onclick="selectOption(this,'date')">Saturday 13th</button>
+        <button onclick="selectOption(this,'date')">Sunday 14th</button>
       </div>
     </div>
 
@@ -218,7 +218,7 @@ function renderTimePage() {
 
 function renderActivityPage() {
   main.innerHTML = `
-    <h2>Pick an activity 😊</h2>
+    <h2>What would you like to do?</h2>
 
     <div class="column">
       <button onclick="selectActivity(this)">Restaurant</button>
@@ -228,8 +228,8 @@ function renderActivityPage() {
       <button onclick="selectActivity(this)">Let's wing it!</button>
     </div>
 
-    <button class="tbd" style="margin-top: 15px; background: #6c757d;"
-      onclick="selectMystery()">Mystery [?]</button>
+    <button class="tbd" style="margin-top: 15px; background: linear-gradient(to right, #91F2DC, #DA6CEB);"
+      onclick="selectMystery()">[?]</button>
 
     <button class="next" id="activityNextBtn" onclick="finalPage()">Next</button>
     <div id="message"></div>
