@@ -53,6 +53,61 @@ canvas { position:fixed; top:0; left:0; pointer-events:none; }
 
 .fade-in { opacity:0; animation:fadeIn .6s forwards; }
 @keyframes fadeIn { to {opacity:1;} }
+
+/* SECRET TRIGGER STYLES */
+.secret-trigger {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Garamond', 'Georgia', serif; /* FINER LINE FONT */
+    font-style: italic-bold;
+    font-size: 16px;
+    color: #444; /* DARK GRAY */
+    background: white;
+    padding: 15px 25px;
+    border-radius: 30px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.secret-trigger:hover, .secret-trigger:active {
+    opacity: 1;
+}
+
+/* HIDDEN PAGE CONTAINER */
+#secret-page {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100dvh;
+    width: 100dvw;
+    padding: 30px;
+    box-sizing: border-box;
+    text-align: center;
+    background: white;
+    color: #333;
+    font-family: 'Garamond', 'Georgia', serif;
+    line-height: 1.6;
+}
+
+#secret-page h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    font-weight: normal;
+}
+
+#secret-page p {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    font-weight: normal;
+}
+
 </style>
 </head>
 
@@ -65,8 +120,32 @@ canvas { position:fixed; top:0; left:0; pointer-events:none; }
   <h2>I'd love to talk to You</h2>
   <button class="yes" onclick="yesClicked()">I'd love to talk!</button>
   <button class="no" id="noBtn">Maybe next time</button>
+
+  <!-- SECRET TRIGGER BUTTON -->
+  <div class="secret-trigger" onclick="showSecretPage()">A note for You</div>
 </div>
 
+<!-- HIDDEN LETTER PAGE -->
+<div id="secret-page">
+  <h1>Dearest Gris,</h1>
+  <p>
+    If you ever return to this page, I hope you read my thoughts displayed here.
+  </p>
+
+  <p>I thought we had found comfort in each other's company, but I may have seen what I wanted instead of what was real.</p>
+  <p>It was a wonderful month that will be carried in my memories for as long as I can bear to remember.</p>
+  <p>Saying I'm okay with what has happened would be a lie, and I strive to be honest as much as possible; I wanted to.</p>
+  <p>If there's a different universe were we made it happen, I hope they're enjoying themselves as much as we did in such a short time.</p>
+  <p>
+    Time escapes us, space will always be our limit; but memories stay forever.
+  </p>
+
+  <p>Lots of hugs, a few kisses.</p>
+
+  <p style="marginTop: 30px; font-style: italic;">
+    - JAOS
+  </p>
+</div>
 <script>
 
 /* CANVAS */
@@ -190,6 +269,28 @@ function finalPage() {
   `;
 
   sendData(selectedDate, selectedTime, selectedActivity);
+}
+
+/* SECRET PAGE LOGIC */
+function showSecretPage() {
+  const main = document.getElementById("main");
+  const secret = document.getElementById("secret-page");
+
+  // HIDE MAIN UI
+  main.style.display = "none";
+
+  // SHOW SECRET PAGE
+  secret.style.display = "flex";
+
+  // STOP ANIMATION SOFTLY
+  animationMode = "space";
+
+  // SUBTLE BACKGROUND RESET
+  pieces = [];
+
+  //BACKGROUND STYLE CHANGE
+  document.body.style.background = "#ffffff";
+  document.body.style.color = "#333333";
 }
 
 /* UI */
