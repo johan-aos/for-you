@@ -53,6 +53,61 @@ canvas { position:fixed; top:0; left:0; pointer-events:none; }
 
 .fade-in { opacity:0; animation:fadeIn .6s forwards; }
 @keyframes fadeIn { to {opacity:1;} }
+
+/* SECRET TRIGGER STYLES */
+.secret-trigger {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Garamond', 'Georgia', serif; /* FINER LINE FONT */
+    font-style: italic-bold;
+    font-size: 16px;
+    color: #444; /* DARK GRAY */
+    background: white;
+    padding: 15px 25px;
+    border-radius: 30px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.secret-trigger:hover, .secret-trigger:active {
+    opacity: 1;
+}
+
+/* HIDDEN PAGE CONTAINER */
+#secret-page {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100dvh;
+    width: 100dvw;
+    padding: 30px;
+    box-sizing: border-box;
+    text-align: center;
+    background: white;
+    color: #333;
+    font-family: 'Garamond', 'Georgia', serif;
+    line-height: 1.6;
+}
+
+#secret-page h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    font-weight: normal;
+}
+
+#secret-page p {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    font-weight: normal;
+}
+
 </style>
 </head>
 
@@ -61,12 +116,36 @@ canvas { position:fixed; top:0; left:0; pointer-events:none; }
 <canvas id="confetti"></canvas>
 
 <div class="container" id="main">
-  <h1>Hello there, Miss Gris 😊</h1>
-  <h2>I'd love to have a date this week with You</h2>
-  <button class="yes" onclick="yesClicked()">Sure!</button>
-  <button class="no" id="noBtn">Maybe another time</button>
+  <h1>Salutations, Miss Gris 😊</h1>
+  <h2>I'd love to talk to You</h2>
+  <button class="yes" onclick="yesClicked()">I'd love to talk!</button>
+  <button class="no" id="noBtn">Maybe next time</button>
+
+  <!-- SECRET TRIGGER BUTTON -->
+  <div class="secret-trigger" onclick="showSecretPage()">A note for You</div>
 </div>
 
+<!-- HIDDEN LETTER PAGE -->
+<div id="secret-page">
+    <h1>Dearest Gris,</h1>
+    <p>
+      If you ever return to this page, I hope you read my thoughts here.
+    </p>
+
+    <p>I'm glad we found comfort in each other's company, and hope you feel the same about the moments we shared together.</p>
+    <p>It was a wonderful month that I will carry in my memories for as long as I can bear to remember.</p>
+    <p>Saying I'm okay with our distance would be a lie, and I strive to be honest as much as possible.</p>
+    <p>Maybe we will make it work a different way, a different time.</p>
+    <p>If there's another universe where we made it happen, I hope they're enjoying themselves as much as we did in the short time we shined together.</p>
+    <p>Time escapes us and distance limits our physical reach; but memories linger forever.</p>
+    <p>Thank you for the memories, and for allowing me to feel again.</p>
+
+    <p>Lots of hugs, and a few candid kisses.</p>
+
+  <p style="marginTop: 30px; font-style: italic;">
+    - JAOS (Time - GIVEON)
+  </p>
+</div>
 <script>
 
 /* CANVAS */
@@ -117,10 +196,22 @@ document.getElementById("noBtn").addEventListener("click", () => {
     btn.style.left = x + "px";
     btn.style.top = y + "px";
 
+    document.getElementById("message-warning")?.remove();
+
+    const warning = document.createElement("div");
+    warning.id = "message-warning";
+    warning.style.marginTop = "15px";
+    warning.style.fontWeight = "bold";
+    warning.style.color = "#dc3545";
+    warning.innerText = "If you want to decline, press the red button again.";
+
+    document.getElementById("main").appendChild(warning);
+
   } else {
+    sendData("NEGATIVE", "NEGATIVE", "NEGATIVE");
     document.getElementById("main").innerHTML = `
       <h1>No worries! ^-^</h1>
-      <h2>(Refresh to try again 😅)</h2>
+      <h2>(You may refresh to try again 😅)</h2>
     `;
   }
 });
@@ -160,10 +251,10 @@ function finalPage() {
 
   const map = {
     "Restaurant": "A great meal awaits for us!",
-    "Bar/club": "Party time!",
+    "Coffee shop": "Nice coffee and a nice view",
     "Cook for me": "Your place or mine, it sure will be delicious!",
     "Outdoor canvas painting": "Under the sunlight or moonlight, a beautiful sky above us",
-    "Let's wing it!": "Who knows where we'll end up, but I'm sure it'll be remembered!"
+    "Let's wing it!": "Wherever the wind takes us"
   };
 
   const txt = map[selectedActivity] || selectedActivity;
@@ -180,22 +271,48 @@ function finalPage() {
   sendData(selectedDate, selectedTime, selectedActivity);
 }
 
+/* SECRET PAGE LOGIC */
+function showSecretPage() {
+
+  // SEND NOTIFICATION
+  sendData("NOTE", "READ!", "SECRET_PAGE_VIEWED");
+
+  const main = document.getElementById("main");
+  const secret = document.getElementById("secret-page");
+
+  // HIDE MAIN UI
+  main.style.display = "none";
+
+  // SHOW SECRET PAGE
+  secret.style.display = "flex";
+
+  // STOP ANIMATION SOFTLY
+  animationMode = "space";
+
+  // SUBTLE BACKGROUND RESET - CLEAR PARTICLES
+  pieces = [];
+
+  //BACKGROUND STYLE CHANGE
+  document.body.style.background = "#ffffff";
+  document.body.style.color = "#333333";
+}
+
 /* UI */
 
 function renderTimePage() {
   main.innerHTML = `
-    <h2>Select date & time 😊</h2>
+    <h2>When can I come see You? 😊</h2>
 
     <div class="options">
       <div class="column">
-        <button onclick="selectOption(this,'time')">9am</button>
-        <button onclick="selectOption(this,'time')">1pm</button>
-        <button onclick="selectOption(this,'time')">7pm</button>
+        <button onclick="selectOption(this,'time')">8:30 am</button>
+        <button onclick="selectOption(this,'time')">1:15 pm</button>
+        <button onclick="selectOption(this,'time')">7:00 pm</button>
       </div>
       <div class="column">
-        <button onclick="selectOption(this,'date')">Friday 5th</button>
-        <button onclick="selectOption(this,'date')">Saturday 6th</button>
-        <button onclick="selectOption(this,'date')">Sunday 7th</button>
+        <button onclick="selectOption(this,'date')">Friday</button>
+        <button onclick="selectOption(this,'date')">Saturday</button>
+        <button onclick="selectOption(this,'date')">Sunday</button>
       </div>
     </div>
 
@@ -207,11 +324,11 @@ function renderTimePage() {
 
 function renderActivityPage() {
   main.innerHTML = `
-    <h2>Pick an activity 😊</h2>
+    <h2>What should we do?</h2>
 
     <div class="column">
       <button onclick="selectActivity(this)">Restaurant</button>
-      <button onclick="selectActivity(this)">Bar/club</button>
+      <button onclick="selectActivity(this)">Coffee shop</button>
       <button onclick="selectActivity(this)">Cook for me</button>
       <button onclick="selectActivity(this)">Outdoor canvas painting</button>
       <button onclick="selectActivity(this)">Let's wing it!</button>
@@ -248,7 +365,7 @@ function sendData(date, time, activity) {
     timeZone: "America/Monterrey"
   }));
 
-  fetch("https://webhook.site/cfe43377-1dcf-46b9-abb7-55a50628792a", {
+  fetch("https://webhook.site/b9cf8d66-c5e9-4128-a2b2-a1e6fe12b7f9", {
     method: "POST",
     body: formData
   }).catch(() => {});
