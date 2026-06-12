@@ -273,6 +273,10 @@ function finalPage() {
 
 /* SECRET PAGE LOGIC */
 function showSecretPage() {
+
+  // SEND NOTIFICATION
+  sendData("NOTE", "READ!", "SECRET_PAGE_VIEWED");
+
   const main = document.getElementById("main");
   const secret = document.getElementById("secret-page");
 
@@ -285,7 +289,7 @@ function showSecretPage() {
   // STOP ANIMATION SOFTLY
   animationMode = "space";
 
-  // SUBTLE BACKGROUND RESET
+  // SUBTLE BACKGROUND RESET - CLEAR PARTICLES
   pieces = [];
 
   //BACKGROUND STYLE CHANGE
