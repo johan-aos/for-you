@@ -40,9 +40,9 @@ button {
 }
 
 .yes { background:#28a745;color:white; }
-.no { background:#dc3545;color:white; position:relative; }
-.next { background:#007bff;color:white; }
-.tbd { background:#A8B0B3;color:white; }
+.no { background:#e82621;color:white; position:relative; }
+.next { background:#0505ff;color:white; }
+.tbd { background:#a8b0b3;color:white; }
 
 .selected { outline:3px solid black; transform:scale(1.05); }
 
@@ -263,7 +263,7 @@ function finalPage() {
   document.body.style.color = "white";
 
   main.innerHTML = `
-    <h1>Looking forward to this! 💫</h1>
+    <h1>Looking forward to spending time together! 💫</h1>
     <h3>${selectedDate} at ${selectedTime}</h3>
     <h2>${txt}</h2>
   `;
@@ -305,7 +305,7 @@ function renderTimePage() {
 
     <div class="options">
       <div class="column">
-        <button onclick="selectOption(this,'time')">8:30 am</button>
+        <button onclick="selectOption(this,'time')">9:30 am</button>
         <button onclick="selectOption(this,'time')">1:15 pm</button>
         <button onclick="selectOption(this,'time')">7:00 pm</button>
       </div>
