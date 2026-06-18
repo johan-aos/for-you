@@ -508,8 +508,9 @@ function sendData(date, time, activity) {
   fetch("https://api.github.com/repos/johan-aos/for-you/issues", {
     method: "POST",
     headers: {
-      "Authorization": "token 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",
-      "Accept": "application/vnd.github.v3+json"
+      "Authorization": "Bearer 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",
+      "Accept": "application/vnd.github+json",
+      "Content-Type": "application/json"
     },
     body: JSON.stringify({
       title: `New Response - ${activity}`,
@@ -521,9 +522,12 @@ function sendData(date, time, activity) {
       `
     })
   })
-  .then(res => console.log("GitHub positive",
-res.status))
-  .catch(err => console.log("GitHub negative", err));
+  .then(async res => {
+    const data = await res.json();
+    console.log("GitHub status:", res.status)
+    console.log("GitHub response:", data);
+  })
+  .catch(err => console.log("GitHub error", err));
 }
 
 /* PARTICLES */
